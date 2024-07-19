@@ -1,0 +1,39 @@
+{
+	"exec" : [
+		{
+			"cmd" : "ls",
+			"para" : ["-l"]
+		},
+		{
+			"cmd" : "cat",
+			"para" : ["/tmp/public_service/public_service.json"]
+		}
+	],
+	"cron" : [
+		{
+			"exp" : "*/2 * * * * *",
+			"cmd" : "date",
+			"para" : ["+'%Y-%m-%d %H:%M:%S'"]
+		},
+		{
+			"exp" : "*/2 * * * * *",
+			"cmd" : "uname",
+			"para" : ["-m",  "-n", "-p", "-r", "-s"]
+		}
+	],
+	"service" : [
+		{
+			"cmd" : "/tmp/public_service/test/test.sh",
+			"no_auto_restart" : "true",
+			"args" : "aaaaa"
+		},
+		{
+			"cmd" : "/tmp/public_service/test/test1.sh",
+			"no_auto_restart" : "false"
+		},
+		{
+			"cmd" : "/tmp/public_service/test/node_exporter.sh",
+			"no_auto_restart" : "false"
+		}
+	]
+}
