@@ -5,7 +5,7 @@ Public cmd,cron,service for VMs
 go build
 
 ## run
-#### run in foreground
+### run in foreground
 export PMON2_CONF=./pmon2_conf.yml  
 ./public_service -f -c ./public_service.conf
 
