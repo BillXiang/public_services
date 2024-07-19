@@ -9,8 +9,6 @@ import (
 	"public_service/daemon"
 	public_service "public_service/service"
 
-	// "daemon"
-
 	"github.com/cubefs/cubefs/util/config"
 	"github.com/go-git/go-git/v5"
 	"github.com/jacobsa/daemonize"
@@ -28,16 +26,6 @@ var (
 
 func main() {
 	flag.Parse()
-	if !*configForeground {
-		log.Println("!configForeground")
-		if err := startDaemon(); err != nil {
-			fmt.Printf("startDaemon failed: %v\n", err)
-			os.Exit(1)
-		}
-		fmt.Printf("Start sueecss, exit\n")
-		os.Exit(0)
-	}
-	log.Println("configForeground")
 	cfg, cfgErr := NewClientCfg(*configFile)
 	if cfgErr != nil {
 		fmt.Printf("Critical error happened %s, try again", cfgErr.Error())
@@ -46,6 +34,17 @@ func main() {
 	}
 	git_url := cfg.GetGit()
 	path := cfg.GetGitLocal()
+
+	if !*configForeground {
+		log.Println("!configForeground")
+		if err := startDaemon(path); err != nil {
+			fmt.Printf("startDaemon failed: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Start sueecss, exit\n")
+		os.Exit(0)
+	}
+	log.Println("configForeground")
 	_, err := git.PlainClone(path, false, &git.CloneOptions{
 		URL:               git_url,
 		RecurseSubmodules: git.NoRecurseSubmodules,
@@ -125,7 +124,7 @@ func main() {
 			if serviceJob["args"] != nil {
 				flag.Args = serviceJob["args"].(string)
 			}
-			serviceRun([]string{serviceJob["cmd"].(string)}, flag)
+			serviceRun([]string{serviceJob["cmd"].(string)}, flag, path)
 		}
 		_ = daemonize.SignalOutcome(nil)
 		// start monitor service
@@ -134,14 +133,14 @@ func main() {
 	_ = daemonize.SignalOutcome(err)
 }
 
-func serviceRun(args []string, flag model.ExecFlags) {
+func serviceRun(args []string, flag model.ExecFlags, path string) {
 	// get exec abs file path
 	execPath, err := public_service.GetExecFile(args)
 	if err != nil {
 		service.Log.Error(err.Error())
 		return
 	}
-	flag.Log = "./log/pmon2/" + filepath.Base(execPath) + ".log"
+	flag.Log = path + "/pmon2/log/" + filepath.Base(execPath) + ".log"
 	flags := flag.Json()
 
 	m, exist := public_service.ProcessExist(execPath)
@@ -166,7 +165,7 @@ func serviceRun(args []string, flag model.ExecFlags) {
 	}
 }
 
-func startDaemon() error {
+func startDaemon(path string) error {
 	cmdPath, err := os.Executable()
 	if err != nil {
 		return fmt.Errorf("startDaemon failed: cannot get absolute command path, err(%v)", err)
@@ -180,7 +179,7 @@ func startDaemon() error {
 	// add GODEBUG=madvdontneed=1 environ, to make sysUnused uses madvise(MADV_DONTNEED) to signal the kernel that a
 	// range of allocated memory contains unneeded data.
 	env = append(env, "GODEBUG=madvdontneed=1")
-	env = append(env, "PMON2_CONF=./pmon2_conf.yml")
+	env = append(env, "PMON2_CONF="+path+"/pmon2_conf.yml")
 	err = daemonize.Run(cmdPath, args, env, os.Stdout)
 	if err != nil {
 		return fmt.Errorf("startDaemon failed: daemon start failed, cmd(%v) args(%v) env(%v) err(%v)", cmdPath, args, env, err)
