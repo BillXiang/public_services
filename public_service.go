@@ -1,13 +1,14 @@
 package main
 
 import (
-	"cfs-daemon/pkg/cfs"
-	"cfs-daemon/pkg/daemon"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"public_service/daemon"
+
+	// "daemon"
 
 	"github.com/cubefs/cubefs/util/config"
 	"github.com/go-git/go-git/v5"
@@ -36,7 +37,7 @@ func main() {
 		os.Exit(0)
 	}
 	log.Println("configForeground")
-	cfg, cfgErr := cfs.NewClientCfg(*configFile)
+	cfg, cfgErr := NewClientCfg(*configFile)
 	if cfgErr != nil {
 		fmt.Printf("Critical error happened %s, try again", cfgErr.Error())
 		_ = daemonize.SignalOutcome(cfgErr)

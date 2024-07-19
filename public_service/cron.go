@@ -1,4 +1,4 @@
-package main
+package public_service
 
 type CronJob struct {
 	Exp string `json:"exp"`
