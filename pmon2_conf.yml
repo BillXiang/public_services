@@ -3,6 +3,6 @@
 # --------------------------------
 
 # data dir, such as db data
-data: "./pmon2/data"
+data: "/tmp/public_services/pmon2/data"
 # logs dir
-logs: "./log/pmon2/"
+logs: "/tmp/public_services/pmon2/log/"

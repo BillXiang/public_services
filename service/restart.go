@@ -8,10 +8,10 @@ import (
 	"github.com/ntt360/pmon2/client/proxy"
 )
 
-func restart(m *model.Process, flags string) ([]string, error) {
+func Restart(m *model.Process, flags string) ([]string, error) {
 	// only stopped process or failed process allow run start
 	if m.Status == model.StatusStopped || m.Status == model.StatusFailed {
-		newData, err := reloadProcess(m, flags)
+		newData, err := ReloadProcess(m, flags)
 		if err != nil {
 			return nil, err
 		}
@@ -22,7 +22,7 @@ func restart(m *model.Process, flags string) ([]string, error) {
 	return nil, fmt.Errorf("the process already start")
 }
 
-func reloadProcess(m *model.Process, flags string) ([]string, error) {
+func ReloadProcess(m *model.Process, flags string) ([]string, error) {
 	data, err := proxy.RunProcess([]string{"restart", m.ProcessFile, flags})
 
 	if err != nil {

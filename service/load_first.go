@@ -12,7 +12,7 @@ import (
 	"github.com/ntt360/pmon2/client/proxy"
 )
 
-func loadFirst(execPath string, flags string) ([]string, error) {
+func LoadFirst(execPath string, flags string) ([]string, error) {
 	data, err := proxy.RunProcess([]string{"start", execPath, flags})
 	if err != nil {
 		return nil, err
@@ -25,7 +25,7 @@ func loadFirst(execPath string, flags string) ([]string, error) {
 }
 
 // check the process already have
-func processExist(execPath string) (*model.Process, bool) {
+func ProcessExist(execPath string) (*model.Process, bool) {
 	var process model.Process
 	err := app.Db().First(&process, "process_file = ?", execPath).Error
 	if err != nil {
@@ -35,7 +35,7 @@ func processExist(execPath string) (*model.Process, bool) {
 	return &process, true
 }
 
-func getExecFile(args []string) (string, error) {
+func GetExecFile(args []string) (string, error) {
 	execFile := args[0]
 	_, err := os.Stat(execFile)
 	if os.IsNotExist(err) {

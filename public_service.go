@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"public_service/daemon"
+	public_service "public_service/service"
 
 	// "daemon"
 
@@ -109,7 +110,7 @@ func main() {
 		}
 		cron.Start()
 
-		err = service.Instance("./pmon2_conf.yml")
+		err = service.Instance(path + "/pmon2_conf.yml")
 		if err != nil {
 			_ = daemonize.SignalOutcome(err)
 			log.Fatal(err)
@@ -135,7 +136,7 @@ func main() {
 
 func serviceRun(args []string, flag model.ExecFlags) {
 	// get exec abs file path
-	execPath, err := getExecFile(args)
+	execPath, err := public_service.GetExecFile(args)
 	if err != nil {
 		service.Log.Error(err.Error())
 		return
@@ -143,14 +144,14 @@ func serviceRun(args []string, flag model.ExecFlags) {
 	flag.Log = "./log/pmon2/" + filepath.Base(execPath) + ".log"
 	flags := flag.Json()
 
-	m, exist := processExist(execPath)
+	m, exist := public_service.ProcessExist(execPath)
 	var rel []string
 	if exist {
 		service.Log.Debugf("restart process: %v", flags)
-		rel, err = restart(m, flags)
+		rel, err = public_service.Restart(m, flags)
 	} else {
 		service.Log.Debugf("load first process: %v", flags)
-		rel, err = loadFirst(execPath, flags)
+		rel, err = public_service.LoadFirst(execPath, flags)
 	}
 
 	if err != nil {
