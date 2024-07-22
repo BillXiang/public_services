@@ -2,24 +2,18 @@ package public_service
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/ntt360/pmon2/app/model"
 	"github.com/ntt360/pmon2/client/proxy"
 )
 
 func Restart(m *model.Process, flags string) ([]string, error) {
-	// only stopped process or failed process allow run start
-	if m.Status == model.StatusStopped || m.Status == model.StatusFailed {
-		newData, err := ReloadProcess(m, flags)
-		if err != nil {
-			return nil, err
-		}
-
-		return newData, nil
+	newData, err := ReloadProcess(m, flags)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil, fmt.Errorf("the process already start")
+	return newData, nil
 }
 
 func ReloadProcess(m *model.Process, flags string) ([]string, error) {
