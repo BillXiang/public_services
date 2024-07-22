@@ -22,7 +22,11 @@ export PMON2_CONF=./pmon2_conf.yml
 ### run in background
 ./public_service -c ./public_service.conf  
 会在后台以服务模式拉起自己，保证自身运行的可靠性，然后在服务中拉起 public_service.json  中配置的其他 cmd,cron,service
-### pmon2
+
+
+# TODO
+任务动态更新
+## pmon2
 https://github.com/ntt360/pmon2  
 可以使用pmon2进行服务管理  
 tar -zxvf pmon2-1.12.1.tar.gz  
@@ -48,6 +52,6 @@ Available Commands:
   logf        display process log dynamic by id or name
   version     show pmon2 version
 ```
-
-# TODO
-任务动态更新
+## cron
+https://github.com/robfig/cron  
+也有接口
