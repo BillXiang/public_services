@@ -34,6 +34,10 @@
 		{
 			"cmd" : "/tmp/public_services/test/node_exporter.sh",
 			"no_auto_restart" : "false"
+		},
+		{
+			"cmd" : "/root/xwc/dcgm-exporter",
+			"no_auto_restart" : "false"
 		}
 	]
 }
