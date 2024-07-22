@@ -48,3 +48,6 @@ Available Commands:
   logf        display process log dynamic by id or name
   version     show pmon2 version
 ```
+
+#TODO
+任务动态更新
