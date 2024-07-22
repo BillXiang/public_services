@@ -25,7 +25,12 @@ export PMON2_CONF=./pmon2_conf.yml
 ### pmon2
 https://github.com/ntt360/pmon2  
 可以使用pmon2进行服务管理  
+tar -zxvf pmon2-1.12.1.tar.gz  
+cd pmon2-1.12.1
+sh ./init_dev.sh
+
 export PMON2_CONF=/home/public_services/pmon2_conf.yml
+pmon2-1.12.1/bin/pmon2
 ```
 Usage:
   pmon2 [command]
