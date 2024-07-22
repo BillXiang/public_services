@@ -25,7 +25,7 @@
 		{
 			"cmd" : "/tmp/public_services/test/test.sh",
 			"no_auto_restart" : "true",
-			"args" : "aaaaa"
+			"args" : "args0 args1"
 		},
 		{
 			"cmd" : "/tmp/public_services/test/test1.sh",

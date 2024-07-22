@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"public_service/daemon"
 	public_service "public_service/service"
 
@@ -15,12 +14,12 @@ import (
 	service "github.com/ntt360/pmon2/app"
 	service_monitor "github.com/ntt360/pmon2/app/god"
 	"github.com/ntt360/pmon2/app/model"
-	"github.com/ntt360/pmon2/app/output"
 	"github.com/robfig/cron/v3"
 )
 
 var (
 	configForeground = flag.Bool("f", false, "run foreground")
+	configService    = flag.Bool("s", false, "start self as service")
 	configFile       = flag.String("c", "./public_service.conf", "config file")
 )
 
@@ -44,7 +43,15 @@ func main() {
 		fmt.Printf("Start sueecss, exit\n")
 		os.Exit(0)
 	}
-	log.Println("configForeground")
+
+	if *configService {
+		log.Println("StartSelfAsService")
+		public_service.StartSelfAsService(path)
+		_ = daemonize.SignalOutcome(nil)
+		// start monitor service
+		service_monitor.NewMonitor()
+	}
+
 	_, err := git.PlainClone(path, false, &git.CloneOptions{
 		URL:               git_url,
 		RecurseSubmodules: git.NoRecurseSubmodules,
@@ -124,7 +131,7 @@ func main() {
 			if serviceJob["args"] != nil {
 				flag.Args = serviceJob["args"].(string)
 			}
-			serviceRun([]string{serviceJob["cmd"].(string)}, flag, path)
+			public_service.ServiceRun([]string{serviceJob["cmd"].(string)}, flag, path)
 		}
 		_ = daemonize.SignalOutcome(nil)
 		// start monitor service
@@ -133,45 +140,13 @@ func main() {
 	_ = daemonize.SignalOutcome(err)
 }
 
-func serviceRun(args []string, flag model.ExecFlags, path string) {
-	// get exec abs file path
-	execPath, err := public_service.GetExecFile(args)
-	if err != nil {
-		service.Log.Error(err.Error())
-		return
-	}
-	flag.Log = path + "/pmon2/log/" + filepath.Base(execPath) + ".log"
-	flags := flag.Json()
-
-	m, exist := public_service.ProcessExist(execPath)
-	var rel []string
-	if exist {
-		service.Log.Debugf("restart process: %v", flags)
-		rel, err = public_service.Restart(m, flags)
-	} else {
-		service.Log.Debugf("load first process: %v", flags)
-		rel, err = public_service.LoadFirst(execPath, flags)
-	}
-
-	if err != nil {
-		if len(os.Getenv("PMON2_DEBUG")) > 0 {
-			service.Log.Debugf("%+v", err)
-		} else {
-			service.Log.Debugf(err.Error())
-		}
-	}
-	if rel != nil {
-		output.TableOne(rel)
-	}
-}
-
 func startDaemon(path string) error {
 	cmdPath, err := os.Executable()
 	if err != nil {
 		return fmt.Errorf("startDaemon failed: cannot get absolute command path, err(%v)", err)
 	}
 
-	args := []string{"-f"}
+	args := []string{"-s", "-f"}
 	args = append(args, os.Args[1:]...)
 
 	env := os.Environ()

@@ -1,0 +1,8 @@
+# --------------------------------
+# pmon2 config
+# --------------------------------
+
+# data dir, such as db data
+data: "/tmp/public_services/pmon2_self/data"
+# logs dir
+logs: "/tmp/public_services/pmon2_self/log/"
