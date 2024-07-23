@@ -19,7 +19,15 @@ func ServiceRun(args []string, flag model.ExecFlags, path string) {
 		service.Log.Error(err.Error())
 		return
 	}
-	flag.Log = path + "/pmon2/log/" + filepath.Base(execPath) + ".log"
+	dir := path + "/pmon2/log/"
+	_, err = os.Stat(dir)
+	if os.IsNotExist(err) {
+		err := os.MkdirAll(dir, 0755)
+		if err != nil {
+			service.Log.Errorf("err: %s, logs dir: '%s'", err.Error(), dir)
+		}
+	}
+	flag.Log = dir + filepath.Base(execPath) + ".log"
 	flags := flag.Json()
 
 	m, exist := ProcessExist(execPath)
