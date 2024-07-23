@@ -95,6 +95,7 @@ func main() {
 				Args:    parasStrs,
 			}
 			pd.StartSubprocess()
+			pd.Wait()
 		}
 
 		cron := cron.New(cron.WithSeconds())
@@ -112,6 +113,7 @@ func main() {
 			}
 			cron.AddFunc(cronJob["exp"].(string), func() {
 				pd.StartSubprocess()
+				pd.Wait()
 			})
 		}
 		cron.Start()
