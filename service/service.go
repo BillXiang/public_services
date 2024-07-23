@@ -5,12 +5,40 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"public_service/config"
 	"strings"
 
+	"github.com/jacobsa/daemonize"
 	service "github.com/ntt360/pmon2/app"
+	service_monitor "github.com/ntt360/pmon2/app/god"
 	"github.com/ntt360/pmon2/app/model"
 	"github.com/ntt360/pmon2/app/output"
 )
+
+func Service(jobCfg *config.Config, path string) {
+	err := service.Instance(path + "/pmon2_conf.yml")
+	if err != nil {
+		_ = daemonize.SignalOutcome(err)
+		log.Fatal(err)
+	}
+	serviceJobs := jobCfg.GetSlice("service")
+	for _, item := range serviceJobs {
+		var flag model.ExecFlags
+		serviceJob := item.(map[string]interface{})
+		if serviceJob["no_auto_restart"] != nil {
+			flag.NoAutoRestart = (serviceJob["no_auto_restart"].(string) == "true")
+		}
+		if serviceJob["args"] != nil {
+			flag.Args = serviceJob["args"].(string)
+		}
+		ServiceRun([]string{serviceJob["cmd"].(string)}, flag, path)
+	}
+	// start monitor service
+	go func() {
+		service_monitor.NewMonitor()
+	}()
+
+}
 
 func ServiceRun(args []string, flag model.ExecFlags, path string) {
 	// get exec abs file path
@@ -59,7 +87,7 @@ func StartSelfAsService(path string) error {
 	}
 	err = service.Instance(path + "/pmon2_self_conf.yml")
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	var flag model.ExecFlags
@@ -68,5 +96,9 @@ func StartSelfAsService(path string) error {
 	flag.Args = strings.Join(os.Args[2:], " ")
 	os.Setenv("PMON2_CONF", path+"/pmon2_self_conf.yml")
 	ServiceRun([]string{cmdPath}, flag, path)
+	go func() {
+		// start monitor service
+		service_monitor.NewMonitor()
+	}()
 	return nil
 }

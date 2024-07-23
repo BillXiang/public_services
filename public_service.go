@@ -5,16 +5,13 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"public_service/daemon"
+	"os/signal"
+	"public_service/config"
 	public_service "public_service/service"
+	"syscall"
 
-	"github.com/cubefs/cubefs/util/config"
 	"github.com/go-git/go-git/v5"
 	"github.com/jacobsa/daemonize"
-	service "github.com/ntt360/pmon2/app"
-	service_monitor "github.com/ntt360/pmon2/app/god"
-	"github.com/ntt360/pmon2/app/model"
-	"github.com/robfig/cron/v3"
 )
 
 var (
@@ -44,100 +41,58 @@ func main() {
 		os.Exit(0)
 	}
 
-	if *configService {
-		log.Println("StartSelfAsService")
-		public_service.StartSelfAsService(path)
-		_ = daemonize.SignalOutcome(nil)
-		// start monitor service
-		service_monitor.NewMonitor()
-	}
-
 	_, err := git.PlainClone(path, false, &git.CloneOptions{
 		URL:               git_url,
 		RecurseSubmodules: git.NoRecurseSubmodules,
 	})
 	if err == nil || err.Error() == "repository already exists" {
-		r, err := git.PlainOpen(path)
-		if err != nil {
-			fmt.Println(err.Error())
-			_ = daemonize.SignalOutcome(err)
-			return
-		}
-		w, err := r.Worktree()
-		if err != nil {
-			fmt.Println(err.Error())
-			_ = daemonize.SignalOutcome(err)
-			return
-		}
-		err = w.Pull(&git.PullOptions{RemoteName: "origin"})
-		if err == nil {
-			fmt.Println("Pull success")
+		if *configService {
+			log.Println("StartSelfAsService")
+			public_service.StartSelfAsService(path)
 		} else {
-			fmt.Println(err.Error())
-		}
+			r, err := git.PlainOpen(path)
+			if err != nil {
+				fmt.Println(err.Error())
+				_ = daemonize.SignalOutcome(err)
+				return
+			}
+			w, err := r.Worktree()
+			if err != nil {
+				fmt.Println("Worktree " + err.Error())
+				_ = daemonize.SignalOutcome(err)
+				return
+			}
+			err = w.Pull(&git.PullOptions{RemoteName: "origin"})
+			if err == nil {
+				fmt.Println("Pull success")
+			} else {
+				fmt.Println("Pull " + err.Error())
+			}
 
-		jobCfg, err := config.LoadConfigFile(path + "/public_service.json")
-		if err != nil {
-			_ = daemonize.SignalOutcome(err)
-			return
-		}
+			jobCfg, err := config.LoadConfigFile(path + "/public_service.json")
+			if err != nil {
+				_ = daemonize.SignalOutcome(err)
+				return
+			}
 
-		execJobs := jobCfg.GetSlice("exec")
-		for _, item := range execJobs {
-			execJob := item.(map[string]interface{})
-			paras := execJob["para"].([]interface{})
-			parasStrs := make([]string, 0, len(paras))
-			for _, para := range paras {
-				parasStrs = append(parasStrs, para.(string))
-			}
-			pd := &daemon.ProcessDaemon{
-				CmdPath: execJob["cmd"].(string),
-				Args:    parasStrs,
-			}
-			pd.StartSubprocess()
-			pd.Wait()
-		}
-
-		cron := cron.New(cron.WithSeconds())
-		cronJobs := jobCfg.GetSlice("cron")
-		for _, item := range cronJobs {
-			cronJob := item.(map[string]interface{})
-			paras := cronJob["para"].([]interface{})
-			parasStrs := make([]string, 0, len(paras))
-			for _, para := range paras {
-				parasStrs = append(parasStrs, para.(string))
-			}
-			pd := &daemon.ProcessDaemon{
-				CmdPath: cronJob["cmd"].(string),
-				Args:    parasStrs,
-			}
-			cron.AddFunc(cronJob["exp"].(string), func() {
-				pd.StartSubprocess()
-				pd.Wait()
-			})
-		}
-		cron.Start()
-
-		err = service.Instance(path + "/pmon2_conf.yml")
-		if err != nil {
-			_ = daemonize.SignalOutcome(err)
-			log.Fatal(err)
-		}
-		serviceJobs := jobCfg.GetSlice("service")
-		for _, item := range serviceJobs {
-			var flag model.ExecFlags
-			serviceJob := item.(map[string]interface{})
-			if serviceJob["no_auto_restart"] != nil {
-				flag.NoAutoRestart = (serviceJob["no_auto_restart"].(string) == "true")
-			}
-			if serviceJob["args"] != nil {
-				flag.Args = serviceJob["args"].(string)
-			}
-			public_service.ServiceRun([]string{serviceJob["cmd"].(string)}, flag, path)
+			public_service.Exec(jobCfg)
+			public_service.Cron(jobCfg)
+			public_service.Service(jobCfg, path)
 		}
 		_ = daemonize.SignalOutcome(nil)
-		// start monitor service
-		service_monitor.NewMonitor()
+
+		sigs := make(chan os.Signal, 1)
+		done := make(chan bool, 1)
+		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+		go func() {
+			sig := <-sigs
+			fmt.Println()
+			fmt.Println(sig)
+			done <- true
+		}()
+		fmt.Println("awaiting signal")
+		<-done
+		fmt.Println("exiting")
 	}
 	_ = daemonize.SignalOutcome(err)
 }
