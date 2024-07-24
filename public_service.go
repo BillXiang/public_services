@@ -50,13 +50,13 @@ func main() {
 			log.Println("StartSelfAsService")
 			public_service.StartSelfAsService(path)
 		} else {
-			r, err := git.PlainOpen(path)
+			repo, err := git.PlainOpen(path)
 			if err != nil {
 				fmt.Println(err.Error())
 				_ = daemonize.SignalOutcome(err)
 				return
 			}
-			w, err := r.Worktree()
+			w, err := repo.Worktree()
 			if err != nil {
 				fmt.Println("Worktree " + err.Error())
 				_ = daemonize.SignalOutcome(err)
@@ -78,6 +78,7 @@ func main() {
 			public_service.Exec(jobCfg)
 			public_service.Cron(jobCfg)
 			public_service.Service(jobCfg, path)
+			public_service.RemoteProcess(repo, path)
 		}
 		_ = daemonize.SignalOutcome(nil)
 
