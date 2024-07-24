@@ -45,7 +45,7 @@ func main() {
 		URL:               git_url,
 		RecurseSubmodules: git.NoRecurseSubmodules,
 	})
-	if err == nil || err.Error() == "repository already exists" {
+	if err == nil || err == git.ErrRepositoryAlreadyExists {
 		if *configService {
 			log.Println("StartSelfAsService")
 			public_service.StartSelfAsService(path)
