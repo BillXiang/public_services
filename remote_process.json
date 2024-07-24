@@ -1,0 +1,12 @@
+{
+	"exec" : [
+		{
+			"cmd" : "echo",
+			"para" : ["########### REMOT_PROCESS 1 #############"]
+		},
+		{
+			"cmd" : "echo",
+			"para" : ["########### REMOT_PROCESS 2 #############"]
+		}
+	]
+}
