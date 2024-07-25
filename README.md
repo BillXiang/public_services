@@ -28,6 +28,12 @@ config remote commands in remote_process.json and push to git with message start
 
 # TODO
 任务动态更新
+
+# dependence
+## go-git
+https://github.com/BillXiang/go-git/tree/test-xwc
+fix #53: https://github.com/go-git/go-git/pull/1158
+
 ## pmon2
 https://github.com/ntt360/pmon2  
 use pmon2 to manage service
