@@ -19,10 +19,13 @@ func RemoteProcess(repo *git.Repository, path string) {
 			return
 		}
 		for {
-			repo.Fetch(&git.FetchOptions{
-				RemoteName: "origin",
-			})
 			fmt.Println(since)
+			err := w.Pull(&git.PullOptions{})
+			if err == nil {
+				fmt.Println("Pull success")
+			} else {
+				fmt.Println("Pull " + err.Error())
+			}
 
 			commits, _ := repo.Log(&git.LogOptions{
 				Since: since,
@@ -32,13 +35,6 @@ func RemoteProcess(repo *git.Repository, path string) {
 					since = &c.Author.When
 					fmt.Print(c)
 					if strings.HasPrefix(c.Message, "[REMOTE_PROCESS]") {
-						err := w.Pull(&git.PullOptions{Force: true})
-						if err == nil {
-							fmt.Println("Pull success")
-						} else {
-							fmt.Println("Pull " + err.Error())
-						}
-
 						jobCfg, err := config.LoadConfigFile(path + "/remote_process.json")
 						if err != nil {
 							return err
