@@ -2,7 +2,6 @@
 Public cmd,cron,service for VMs
 
 ## build
-go get github.com/cubefs/cubefs/util/config  
 go get github.com/go-git/go-git/v5  
 go get github.com/jacobsa/daemonize  
 go get github.com/ntt360/pmon2/app  
