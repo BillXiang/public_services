@@ -5,7 +5,6 @@ go 1.22.1
 require (
 	github.com/cubefs/cubefs v2.5.2+incompatible
 	github.com/gin-gonic/gin v1.6.3
-	github.com/go-git/go-git/v5 v5.12.0
 	github.com/goinbox/shell v1.0.1
 	github.com/jacobsa/daemonize v0.0.0-20160101105449-e460293e890f
 	github.com/jinzhu/gorm v1.9.15
@@ -33,6 +32,7 @@ require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.5.0 // indirect
+	github.com/go-git/go-git/v5 v5.12.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
@@ -70,3 +70,5 @@ require (
 	golang.org/x/tools v0.13.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )
+
+replace github.com/go-git/go-git/v5 => ../go-git
