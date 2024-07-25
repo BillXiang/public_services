@@ -21,14 +21,16 @@ export PMON2_CONF=./pmon2_conf.yml
 
 ### run in background
 ./public_service -c ./public_service.conf  
-会在后台以服务模式拉起自己，保证自身运行的可靠性，然后在服务中拉起 public_service.json  中配置的其他 cmd,cron,service
+会在后台以服务模式拉起自己，保证自身运行的可靠性，然后在服务中拉起 public_service.json 中配置的其他 cmd,cron,service
 
+## remote command execute
+config remote commands in remote_process.json and push to git with message start with "[REMOTE_PROCESS]"
 
 # TODO
 任务动态更新
 ## pmon2
 https://github.com/ntt360/pmon2  
-可以使用pmon2进行服务管理  
+use pmon2 to manage service
 tar -zxvf pmon2-1.12.1.tar.gz  
 cd pmon2-1.12.1
 sh ./init_dev.sh
@@ -54,4 +56,3 @@ Available Commands:
 ```
 ## cron
 https://github.com/robfig/cron  
-也有接口
