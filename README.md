@@ -13,6 +13,20 @@ go get github.com/robfig/cron/v3
 go get github.com/shirou/gopsutil/process  
 go build
 
+## config
+public_service.conf  
+| config name  |   |
+|  ----  | ----  |
+| git | git url to get services | 
+| git_local | local path for git | 
+```
+{
+	"git" : "https://github.com/BillXiang/public_services_jobs.git",
+	"git_local" : "/tmp/public_services_jobs"
+
+}
+```
+
 ## run
 ### run in foreground
 export PMON2_CONF=./pmon2_conf.yml  
