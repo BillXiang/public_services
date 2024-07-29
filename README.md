@@ -33,7 +33,7 @@ export PMON2_CONF=./pmon2_conf.yml
 ./public_service -f -c /PATH/public_service.conf
 
 ### run in background
-./public_service -c ./public_service.conf  
+./public_service -c /PATH/public_service.conf  
 会在后台以服务模式拉起自己，保证自身运行的可靠性，然后在服务中拉起 public_service.json 中配置的其他 cmd,cron,service
 
 ## remote command execute
