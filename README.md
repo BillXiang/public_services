@@ -2,9 +2,9 @@
 Public cmd,cron,service for VMs
 
 ## build
-git clone --branch test-xwc [https://github.com/BillXiang/go-git/tree/tes](https://github.com/BillXiang/go-git.git)
-git clone https://github.com/BillXiang/public_services.git
-cd public_services
+git clone --branch test-xwc [https://github.com/BillXiang/go-git/tree/tes](https://github.com/BillXiang/go-git.git)  
+git clone https://github.com/BillXiang/public_services.git  
+cd public_services  
 go get github.com/jacobsa/daemonize  
 go get github.com/ntt360/pmon2/app  
 go get github.com/ntt360/pmon2/app/god  
