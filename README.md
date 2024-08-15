@@ -37,7 +37,8 @@ export PMON2_CONF=./pmon2_conf.yml
 会在后台以服务模式拉起自己，保证自身运行的可靠性，然后在服务中拉起 public_service.json 中配置的其他 cmd,cron,service
 
 ## remote command execute
-config remote commands in remote_process.json and push to git with message start with "[REMOTE_PROCESS]"
+config remote commands in remote_process.json and push to git with message start with "[REMOTE_PROCESS]"  
+eg: https://github.com/BillXiang/public_services/commit/04828fcdaff7a1660c2295b4ff53db2b36acf019
 
 # TODO
 任务动态更新
