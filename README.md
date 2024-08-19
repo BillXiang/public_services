@@ -2,7 +2,7 @@
 Public cmd,cron,service for VMs
 
 ## build
-git clone --branch test-xwc https://github.com/BillXiang/go-git.git
+git clone --branch test-xwc https://github.com/BillXiang/go-git.git  
 git clone https://github.com/BillXiang/public_services.git  
 cd public_services  
 go get github.com/jacobsa/daemonize  
