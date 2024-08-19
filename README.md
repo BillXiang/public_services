@@ -13,6 +13,11 @@ go get github.com/ntt360/pmon2/app/output
 go get github.com/ntt360/pmon2/client/proxy  
 go get github.com/robfig/cron/v3  
 go get github.com/shirou/gopsutil/process  
+go get github.com/go-git/go-git/v5 
+> go.mod 中设置了使用本地 go-git
+>```
+>replace github.com/go-git/go-git/v5 => ../go-git
+>```
 go build
 
 ## config
