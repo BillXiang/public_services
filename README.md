@@ -1,5 +1,5 @@
 # public_services
-Public cmd,cron,service for VMs
+Public cmd,[cron](https://pkg.go.dev/github.com/robfig/cron),service for VMs
 
 ## build
 git clone --branch test-xwc https://github.com/BillXiang/go-git.git  
